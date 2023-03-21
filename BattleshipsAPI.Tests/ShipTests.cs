@@ -12,45 +12,46 @@ namespace BattleshipsAPI.Tests
 		[SetUp]
 		public void SetUp()
 		{
-			_destroyer = new Ship("Destroyer", 3, (0, 0), true);
-			_carrier = new Ship("Aircraft Carrier", 5, (5, 5), false);
+			_destroyer = new Ship("Destroyer", 3, new Coordinate(0, 0), true);
+			_carrier = new Ship("Aircraft Carrier", 5, new Coordinate(5, 5), false);
 		}
 
 		[Test]
 		public void CheckValidHit_HitWithinBounds_ReturnsTrue()
 		{
 			// Arrange
-			int row = 0;
-			int col = 1;
+			Coordinate shotCoordinate = new Coordinate(0, 1);
 
 			// Act
-			bool result = _destroyer.CheckValidHit(row, col, 10);
+			bool result = _destroyer.CheckValidHit(shotCoordinate, 10);
 
 			// Assert
 			Assert.IsTrue(result);
 		}
 
 		[Test]
-		public void CheckValidHit_HitOutOfBounds_ThrowsError()
+		public void CheckValidHit_HitOutOfBounds_ReturnsFalse()
 		{
 			// Arrange
-			int row = -1;
-			int col = 1;
+			Coordinate shotCoordinate = new Coordinate(-1, 1);
 
-			// Act + Assert
-			Assert.Throws<ArgumentOutOfRangeException>(() => _destroyer.CheckValidHit(row, col, 10));
+			// Act
+			bool result = _destroyer.CheckValidHit(shotCoordinate, 10);
+
+			// Asset
+			Assert.IsFalse(result);
 		}
 
 		[Test]
-		public void CheckValidHit_Cant_ReturnsFalse()
+		public void CheckValidHit_CantHitSameCellTwice_ReturnsFalse()
 		{
 			// Arrange
-			int row = 0;
-			int col = 1;
-			_destroyer.CheckValidHit(row, col, 10);
+			Coordinate shotCoordinate = new Coordinate(0, 1);
+
+			_destroyer.CheckValidHit(shotCoordinate, 10);
 
 			// Act
-			bool result = _destroyer.CheckValidHit(row, col, 10);
+			bool result = _destroyer.CheckValidHit(shotCoordinate, 10);
 
 			// Assert
 			Assert.IsFalse(result);
@@ -60,22 +61,26 @@ namespace BattleshipsAPI.Tests
 		public void CheckValidHit_AllCellsHit_SetsSunkTrue()
 		{
 			// Arrange
-			_destroyer.CheckValidHit(0, 0, 10);
-			_destroyer.CheckValidHit(0, 1, 10);
-
-			_carrier.CheckValidHit(5, 5, 10);
-			_carrier.CheckValidHit(6, 5, 10);
-			_carrier.CheckValidHit(7, 5, 10);
-			_carrier.CheckValidHit(8, 5, 10);
-
+			int destroyerSize = 3;
+			int carrierSize = 5;
 
 			// Act
-			_destroyer.CheckValidHit(0, 2, 10);
-			_carrier.CheckValidHit(9, 5, 10);
+			for (int i = 0; i < destroyerSize; i++)
+			{
+				Coordinate shotCoordinate = new Coordinate(0, i);
+				_destroyer.CheckValidHit(shotCoordinate, 10);
+			}
+
+			for (int i = 5; i < 5 + carrierSize; i++)
+			{
+				Coordinate shotCoordinate = new Coordinate(i, 5);
+				_carrier.CheckValidHit(shotCoordinate, 10);
+			}
 
 			// Assert
 			Assert.IsTrue(_destroyer.Sunk);
 			Assert.IsTrue(_carrier.Sunk);
 		}
+
 	}
 }

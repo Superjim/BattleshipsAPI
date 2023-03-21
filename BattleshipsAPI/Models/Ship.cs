@@ -5,63 +5,55 @@
 		public string Name { get; }
 		public int Size { get; }
 		public bool Sunk { get; private set; }
-		public List<(int row, int col)> Hits { get; }
-		public (int row, int col) StartPosition { get; }
+		public List<Coordinate> Hits { get; }
+		public Coordinate StartPosition { get; }
 		public bool Horizontal { get; }
 
-		public Ship(string name, int size, (int row, int col) startPosition, bool horizontal)
+		public Ship(string name, int size, Coordinate startPosition, bool horizontal)
 		{
 			Name = name;
 			Size = size;
 			Sunk = false;
-			Hits = new List<(int row, int col)>();
+			Hits = new List<Coordinate>();
 			StartPosition = startPosition;
 			Horizontal = horizontal;
-
 		}
 
-		public bool CheckValidHit(int row, int column, int boardSize)
+		public bool CheckValidHit(Coordinate shotCoordinate, int boardSize)
 		{
-			//shot is outside the game board
-			if (row < 0 || column < 0 || row >= boardSize || column >= boardSize)
+			int row = shotCoordinate.Row;
+			int col = shotCoordinate.Column;
+
+			// shot is outside the game board
+			if (row < 0 || col < 0 || row >= boardSize || col >= boardSize)
 			{
-				throw new ArgumentOutOfRangeException("Shot out of bounds");
+				return false;
 			}
 
-			//shot misses the ship
+			// shot misses the ship
 			if (Horizontal)
 			{
-				if (row != StartPosition.row)
-				{
-					return false;
-				}
-
-				if (column < StartPosition.col || column >= StartPosition.col + Size)
+				if (row != StartPosition.Row || col < StartPosition.Column || col >= StartPosition.Column + Size)
 				{
 					return false;
 				}
 			}
 			else
 			{
-				if (column != StartPosition.col)
-				{
-					return false;
-				}
-
-				if (row < StartPosition.row || row >= StartPosition.row + Size)
+				if (col != StartPosition.Column || row < StartPosition.Row || row >= StartPosition.Row + Size)
 				{
 					return false;
 				}
 			}
 
-			//check the shot location isn't already stored in the hits list
-			if (Hits.Any(hit => hit.row == row && hit.col == column))
+			// check shot location isn't already in the hits list
+			if (Hits.Any(hit => hit.Row == row && hit.Column == col))
 			{
 				return false;
 			}
 
-			//ship is sunk
-			Hits.Add((row, column));
+			// ship is hit
+			Hits.Add(shotCoordinate);
 			if (Hits.Count == Size)
 			{
 				Sunk = true;
