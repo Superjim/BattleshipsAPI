@@ -42,3 +42,4 @@ packages/
 *.cache
 
 .suo
+.lock
