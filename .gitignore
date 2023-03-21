@@ -1,0 +1,42 @@
+# .NET Core
+bin/
+obj/
+*.user
+*.vscode
+*.vs/
+project.lock.json
+project.fragment.lock.json
+*.nuget.props
+*.nuget.targets
+*.dotnet-ide.*
+*/wwwroot/*
+*/appsettings.Development.json
+/appsettings.json
+!appsettings.sample.json
+
+# Visual Studio files
+*.userprefs
+*.vspscc
+*.vssscc
+*.ncrunch*
+*.suo
+*.sln.ide
+*.dbmdl
+*.jfm
+*.pfx
+*.config
+*.sln.docstates
+*.scc
+
+# Visual Studio code coverage results
+*.coverage
+*.coveragexml
+*.dotCover
+
+# NuGet
+*.nupkg
+packages/
+
+# MSBuild binary and cache folders
+*.bin
+*.cache
